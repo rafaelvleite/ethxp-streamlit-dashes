@@ -11,7 +11,6 @@ description = "Deribit ETH Weekly Options"
 
 
 def run():
-    
     import pandas as pd
     import streamlit as st
     st.set_page_config(layout = "wide")
@@ -20,7 +19,6 @@ def run():
     import s3fs
     import datetime
     import seaborn as sns
-    
     
     #Connecting to AWS through smart_open python package and getting the data
     @st.experimental_memo(ttl=None, show_spinner = True)

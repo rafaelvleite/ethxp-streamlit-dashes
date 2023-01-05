@@ -21,17 +21,15 @@ def run():
     import datetime
     import seaborn as sns
     
-    dateparse = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
-    
     
     #Connecting to AWS through smart_open python package and getting the data
     @st.experimental_memo(ttl=None, show_spinner = True)
     def load_data():
         fs = s3fs.S3FileSystem(anon=False)
-    
-        with fs.open('ethxp/dfAually.csv') as f:
-            df = pd.read_csv(f, parse_dates=['datetime', 'creation_datetime', 'expiration_datetime'], date_parser=dateparse)
         
+        with fs.open("ethxp/dfAually.parquet", 'rb') as f:
+            df = pd.read_parquet(f)
+
         df.set_index('instrument_name', inplace=True)
     
         return df
