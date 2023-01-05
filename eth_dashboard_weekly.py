@@ -12,6 +12,7 @@ description = "Deribit ETH Weekly Options"
 
 def run():
     
+    import pandas as pd
     import streamlit as st
     st.set_page_config(layout = "wide")
     import altair as alt
@@ -19,7 +20,7 @@ def run():
     import s3fs
     import datetime
     import seaborn as sns
-    import pyarrow.parquet as pq
+    
     
     dateparse = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
     
@@ -29,12 +30,10 @@ def run():
     def load_data():
         fs = s3fs.S3FileSystem(anon=False)
         
-        s3_filepath = "ethxp/df6a.parquet"
+        with fs.open("ethxp/df6a.parquet", 'rb') as f:
+            df = pd.read_parquet(f)
 
-        df = pq.ParquetDataset(
-            s3_filepath,
-            filesystem=fs)
-                
+
         df['datetime'] = df['datetime'].apply(dateparse)
         df['creation_datetime'] = df['creation_datetime'].apply(dateparse)
         df['expiration_datetime'] = df['expiration_datetime'].apply(dateparse)
