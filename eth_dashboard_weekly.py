@@ -20,6 +20,7 @@ def run():
     import s3fs
     import datetime
     import seaborn as sns
+    import io
     
     dateparse = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
     
@@ -28,9 +29,12 @@ def run():
     @st.experimental_memo(ttl=None, show_spinner = True)
     def load_data():
         fs = s3fs.S3FileSystem(anon=False)
-    
-        with fs.open('ethxp/df6a.csv') as f:
-            df = pd.read_csv(f, parse_dates=['datetime', 'creation_datetime', 'expiration_datetime'], date_parser=dateparse)
+        obj = fs.get_object(Bucket="ethxp", Key="df6a.parquet")
+        df = pd.read_parquet(io.BytesIO(obj['Body'].read()))
+        
+        df['datetime'] = df['datetime'].apply(dateparse)
+        df['creation_datetime'] = df['creation_datetime'].apply(dateparse)
+        df['expiration_datetime'] = df['expiration_datetime'].apply(dateparse)
         
         df.set_index('instrument_name', inplace=True)
     
