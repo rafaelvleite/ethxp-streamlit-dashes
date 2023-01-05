@@ -1,0 +1,5 @@
+pandas==1.3.4
+s3fs
+streamlit==1.16.0
+seaborn==0.10.1
+altair==4.2.0
