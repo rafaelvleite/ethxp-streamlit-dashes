@@ -122,7 +122,7 @@ def run():
                     scale=chartScale1,
                     ),
                 color=alt.Color('instrument_name:N', scale=alt.Scale(range=sns.color_palette(n_colors=len(data.index.unique().values)).as_hex())),
-                strokeDash='instrument_name:N',
+                #strokeDash='instrument_name:N',
             )
         )
         
