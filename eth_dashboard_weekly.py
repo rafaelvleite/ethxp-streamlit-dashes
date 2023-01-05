@@ -6,7 +6,8 @@ Created on Wed Dec 28 20:38:48 2022
 @author: hack-rafa
 
 """
-description = "Deribit ETH 24Hours Options"
+
+description = "Deribit ETH Weekly Options"
 
 
 def run():
@@ -19,7 +20,7 @@ def run():
     import s3fs
     import datetime
     import seaborn as sns
-     
+    
     dateparse = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
     
     
@@ -28,16 +29,18 @@ def run():
     def load_data():
         fs = s3fs.S3FileSystem(anon=False)
     
-        with fs.open('ethxp/df24hs.csv') as f:
+        with fs.open('ethxp/df6a.csv') as f:
             df = pd.read_csv(f, parse_dates=['datetime', 'creation_datetime', 'expiration_datetime'], date_parser=dateparse)
         
         df.set_index('instrument_name', inplace=True)
     
         return df
+
     
     try:
         # Load data
         df = load_data()
+        #df = dfMonthly.copy()
         
         # Sidebar Option Type
         optionType = st.sidebar.radio(
@@ -70,9 +73,9 @@ def run():
             data = data[(data['expiration_datetime'] >= selectedDate) & (data['expiration_datetime'] <= selectedDate + datetime.timedelta(1))]
         else:
             data = data[(data['expiration_datetime'] >= datesListFormatted[0]) & (data['expiration_datetime'] <= datesListFormatted[0] + datetime.timedelta(1))]
-        
-        ethLowerLimit = round(data.index_price.mean() - 3 * data.index_price.std(), 0)
-        ethUpperLimit = round(data.index_price.mean() + 3 * data.index_price.std(), 0)
+            
+        ethLowerLimit = round(data.index_price.min())
+        ethUpperLimit = round(data.index_price.max())
         ethMean = round(data.index_price.mean())
         ethStd = round(data.index_price.std())
         
@@ -102,14 +105,12 @@ def run():
         else:
             data = data[data['strike'].isin(strikes)].copy()
         
-        
         # Prepare Data
         data['ethInstrument'] = "ETH"
         data = data.reset_index()
             
-            
         # Render
-        st.write("### Past Data for Deribit ETH 24Hours Options", data.sort_index())
+        st.write("### Past Data for Deribit ETH Weekly Options", data.sort_index())
         
         logarithmic = st.checkbox('Logarithmic Scale')
         if logarithmic: 

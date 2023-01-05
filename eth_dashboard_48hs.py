@@ -72,19 +72,26 @@ def run():
         
         ethLowerLimit = round(data.index_price.mean() - 3 * data.index_price.std(), 0)
         ethUpperLimit = round(data.index_price.mean() + 3 * data.index_price.std(), 0)
+        ethMean = round(data.index_price.mean())
+        ethStd = round(data.index_price.std())
         
-        st.sidebar.write("ETH with prices between {} and {} in this period.".format(ethLowerLimit, ethUpperLimit))
+        
+        st.sidebar.write("ETH with prices between {} and {} in this period, with average of {} and standard deviation of {}.".format(ethLowerLimit, ethUpperLimit, ethMean, ethStd))
         
         # Sidebar Strikes
         strikesList = list(data.strike.unique())
         strikesList.sort()
         
+        centerStrikeIndex = min(range(len(strikesList)), key=lambda i: abs(strikesList[i]-ethMean))
+        indexRange = list(range(centerStrikeIndex -3, centerStrikeIndex + 4))
+        selectedStrikes = strikesList[indexRange[0]-1:indexRange[-1]]
+
         container = st.sidebar.container()
-        allStrikes = st.sidebar.checkbox("Select all strikes", value=True)
-         
+        allStrikes = st.sidebar.checkbox("Select 7 centered strikes", value=True)
+        
         if allStrikes:
             strikes = container.multiselect("Select one or more strikes:",
-                 strikesList,strikesList)
+                 strikesList,selectedStrikes)
         else:
             strikes = container.multiselect("Select one or more strikes:",
                 strikesList)
@@ -93,6 +100,7 @@ def run():
             st.sidebar.error("Please select at least one strike.")
         else:
             data = data[data['strike'].isin(strikes)].copy()
+        
         
         # Prepare Data
         data['ethInstrument'] = "ETH"
