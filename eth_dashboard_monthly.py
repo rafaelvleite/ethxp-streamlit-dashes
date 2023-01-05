@@ -40,6 +40,7 @@ def run():
     try:
         # Load data
         df = load_data()
+        #df = dfMonthly.copy()
         
         # Sidebar Option Type
         optionType = st.sidebar.radio(
@@ -81,13 +82,18 @@ def run():
         # Sidebar Strikes
         strikesList = list(data.strike.unique())
         strikesList.sort()
+        ethMean = round(data.index_price.mean())
         
+        centerStrikeIndex = min(range(len(strikesList)), key=lambda i: abs(strikesList[i]-ethMean))
+        indexRange = list(range(centerStrikeIndex -3, centerStrikeIndex + 4))
+        selectedStrikes = strikesList[indexRange[0]-1:indexRange[-1]]
+
         container = st.sidebar.container()
-        allStrikes = st.sidebar.checkbox("Select all strikes", value=True)
-         
+        allStrikes = st.sidebar.checkbox("Select 7 centered strikes", value=True)
+        
         if allStrikes:
             strikes = container.multiselect("Select one or more strikes:",
-                 strikesList,strikesList)
+                 strikesList,selectedStrikes)
         else:
             strikes = container.multiselect("Select one or more strikes:",
                 strikesList)
