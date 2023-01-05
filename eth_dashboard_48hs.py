@@ -29,6 +29,8 @@ def run():
             df = pd.read_parquet(f)
 
         df.set_index('instrument_name', inplace=True)
+        
+        return df
     
     
     try:
