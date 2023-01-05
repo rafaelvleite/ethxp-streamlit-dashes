@@ -50,13 +50,24 @@ def run():
         data = df[df['option_type'] == optionType].copy()
     
         # Sidebar Date
-        d = st.sidebar.date_input(
-        "Choose the instrument creation date",
-        datetime.date(2021, 12, 14))
+        datesList = list(data['expiration_datetime'].unique())
+        datesListFormatted = []
+        for dateIte in datesList:
+            datesListFormatted.append(datetime.datetime.fromtimestamp(dateIte.astype(datetime.datetime)/1000000000))
         
-        d = datetime.datetime.combine(d, datetime.datetime.min.time())
+        datesListFormatted = [i.replace(hour=0) for i in datesListFormatted]
+        datesListFormatted.sort()
+        datesListFormatted.reverse()
         
-        data = data[(data['creation_datetime'] >= d) & (data['creation_datetime'] <= d + datetime.timedelta(1))]
+        selectedDate = st.sidebar.selectbox(
+            "Pick an Expiry Date:",
+            datesListFormatted
+        )
+        
+        if selectedDate:
+            data = data[(data['expiration_datetime'] >= selectedDate) & (data['expiration_datetime'] <= selectedDate + datetime.timedelta(1))]
+        else:
+            data = data[(data['expiration_datetime'] >= datesListFormatted[0]) & (data['expiration_datetime'] <= datesListFormatted[0] + datetime.timedelta(1))]
         
         ethLowerLimit = round(data.index_price.mean() - 3 * data.index_price.std(), 0)
         ethUpperLimit = round(data.index_price.mean() + 3 * data.index_price.std(), 0)
