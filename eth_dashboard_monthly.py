@@ -80,7 +80,7 @@ def run():
         ethStd = round(data.index_price.std())
         
         
-        st.sidebar.write("ETH with prices between {} and {} in this period, with average of {} and std of {}.".format(ethLowerLimit, ethUpperLimit, ethMean, ethStd))
+        st.sidebar.write("ETH with prices between {} and {} in this period, with average of {} and standard deviation of {}.".format(ethLowerLimit, ethUpperLimit, ethMean, ethStd))
         
         # Sidebar Strikes
         strikesList = list(data.strike.unique())
