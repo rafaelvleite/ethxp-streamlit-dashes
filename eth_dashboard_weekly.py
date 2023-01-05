@@ -22,9 +22,6 @@ def run():
     import seaborn as sns
     
     
-    dateparse = lambda x: datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S')
-    
-    
     #Connecting to AWS through smart_open python package and getting the data
     @st.experimental_memo(ttl=None, show_spinner = True)
     def load_data():
@@ -33,11 +30,6 @@ def run():
         with fs.open("ethxp/df6a.parquet", 'rb') as f:
             df = pd.read_parquet(f)
 
-
-        df['datetime'] = df['datetime'].apply(dateparse)
-        df['creation_datetime'] = df['creation_datetime'].apply(dateparse)
-        df['expiration_datetime'] = df['expiration_datetime'].apply(dateparse)
-        
         df.set_index('instrument_name', inplace=True)
     
         return df
