@@ -14,6 +14,7 @@ def run():
     
     import pandas as pd
     import streamlit as st
+    st.set_page_config(layout = "wide")
     import altair as alt
     from urllib.error import URLError
     import s3fs
